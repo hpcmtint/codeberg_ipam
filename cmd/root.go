@@ -15,8 +15,8 @@ var rootCmd = &cobra.Command{
 	Use:   "cmdb",
 	Short: "A cli based CMDB",
 	Long: `A cli based CMDB. 
-	You can manage subnets, single ip addresses within those, and the corresponding A records.
-	IPV6-Support will follow.`,
+You can manage subnets, single ip addresses within those, and the corresponding A records.
+IPV6-Support will follow.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
