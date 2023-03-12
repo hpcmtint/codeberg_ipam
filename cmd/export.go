@@ -13,8 +13,8 @@ import (
 // exportCmd represents the export command
 var exportCmd = &cobra.Command{
 	Use:   "export",
-	Short: "Export current cmdb configuration (not implemented)",
-	Long: `Export current cmdb contents to importable data format.
+	Short: "Export current ipam configuration (not implemented)",
+	Long: `Export current ipam contents to importable data format.
 	
 	Not implemented yet.`,
 	Run: func(cmd *cobra.Command, args []string) {

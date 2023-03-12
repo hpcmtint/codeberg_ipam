@@ -1,0 +1,5 @@
+name: test-net
+vlan-id: 23
+192.168.35.2: test1.example.com
+192.168.35.3: test2.example.com
+192.168.35.4:

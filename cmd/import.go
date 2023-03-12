@@ -13,8 +13,8 @@ import (
 // importCmd represents the import command
 var importCmd = &cobra.Command{
 	Use:   "import",
-	Short: "Import cmdb configuration (not implemented)",
-	Long: `Import ips and subnets to cmdb.
+	Short: "Import ipam configuration (not implemented)",
+	Long: `Import ips and subnets to ipam.
 	
 	Not implemented yet.`,
 	Run: func(cmd *cobra.Command, args []string) {

@@ -1,0 +1,7 @@
+name: "test-net"
+vlan: "-"
+addresses:
+  - 192.168.35.2:
+      fqdn: "dns-01.lauka-home.net"
+  - 192.168.35.3: 
+      fqdn: ""

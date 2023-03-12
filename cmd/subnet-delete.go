@@ -14,18 +14,18 @@ import (
 var subnetdeleteCmd = &cobra.Command{
 	Use:     "delete",
 	Short:   "delete subnet",
-	Long:    `Delete a subnet from the cmdb.`,
+	Long:    `Delete a subnet from the ipam.`,
 	Args:    cobra.ExactArgs(1),
 	Aliases: []string{"d"},
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			fmt.Println("Error: Too few arguments!")
-			fmt.Print("Usage:\n  cmdb subnet delete [subnet]")
+			fmt.Print("Usage:\n  ipam subnet delete [subnet]")
 			os.Exit(1)
 		}
 		if len(args) > 1 {
 			fmt.Println("Error: Too many arguments!")
-			fmt.Print("Usage:\n  cmdb subnet delete [subnet]")
+			fmt.Print("Usage:\n  ipam subnet delete [subnet]")
 			os.Exit(1)
 		}
 		subnet := args[0]
