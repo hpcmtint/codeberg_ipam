@@ -5,8 +5,6 @@ Copyright © 2023 Laura Kalb <dev@lauka.net>
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -16,9 +14,6 @@ var ipCmd = &cobra.Command{
 	Short:   "manage ip addresses",
 	Long:    `Add, delete, edit and show IP addresses`,
 	Aliases: []string{"i"},
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("ip called")
-	},
 }
 
 func init() {
