@@ -22,3 +22,6 @@ go.work
 
 # build output
 output/
+
+# vs code stuff
+.vscode/

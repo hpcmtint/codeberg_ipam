@@ -55,27 +55,36 @@ func initConfig() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
+	var ipamdir string = homedir + "/.ipam/"
 	// Search config in home directory with name ".cobra" (without extension).
-	viper.AddConfigPath(homedir + "/.ipam/")
-	viper.SetConfigName("ipam.yml")
+	viper.AddConfigPath(ipamdir)
+	viper.SetConfigName("ipam")
+	viper.SetConfigType("yaml")
 
 	viper.SetDefault("EnablePowerDNS", false)
-	viper.SetDefault("DataPath", homedir+"/.ipam/data/")
-
-	println(homedir + "/.ipam/")
+	viper.SetDefault("DataPath", ipamdir+"/data/")
 
 	if err := viper.ReadInConfig(); err != nil {
-		//if errfolder := os.MkdirAll(homedir+"/.ipam/", 0664); err != nil {
-		//	println("[ERROR] Can't create config dir!", errfolder)
-		//	os.Exit(1)
-		//}
+		_, patherr := os.Stat(ipamdir)
+		if patherr != nil {
+			mkerr := os.MkdirAll(ipamdir, 0755)
+			if mkerr != nil {
+				println("[ERROR] Can't create ipam config directory!", mkerr)
+			}
+		}
 
-		//if errconfig := viper.WriteConfig(); err != nil {
-		//	println("[ERROR] Can't create config file!", errconfig)
-		//	os.Exit(1)
-		//}
-
-		println("[ERROR] Can't read config file!", err)
+		// I have no idea what's happening here...
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			writeerr := viper.SafeWriteConfig()
+			if writeerr != nil {
+				println("[ERROR] Can't write config file!", writeerr)
+			}
+		} else {
+			println("[ERROR] Can't read config file!", err)
+		}
 	}
+
+	fmt.Println(viper.AllKeys())
 
 }
