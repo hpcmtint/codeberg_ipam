@@ -5,37 +5,24 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 )
 
 // deleteCmd represents the delete command
-var subnetdeleteCmd = &cobra.Command{
-	Use:     "delete",
-	Short:   "delete subnet",
-	Long:    `Delete a subnet from the cmdb.`,
-	Args:    cobra.ExactArgs(1),
+var ipdeleteCmd = &cobra.Command{
+	Use:     "delete ipaddress",
+	Short:   "Delete an IP address",
+	Long:    `Delete an IP address`,
 	Aliases: []string{"d"},
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1 {
-			fmt.Println("Error: Too few arguments!")
-			fmt.Print("Usage:\n  cmdb subnet delete [subnet]")
-			os.Exit(1)
-		}
-		if len(args) > 1 {
-			fmt.Println("Error: Too many arguments!")
-			fmt.Print("Usage:\n  cmdb subnet delete [subnet]")
-			os.Exit(1)
-		}
-		subnet := args[0]
-
-		fmt.Printf("Deleting %v\n", subnet)
+		fmt.Println("ip delete called")
 	},
 }
 
 func init() {
-	subnetCmd.AddCommand(subnetdeleteCmd)
+	ipCmd.AddCommand(ipdeleteCmd)
 
 	// Here you will define your flags and configuration settings.
 

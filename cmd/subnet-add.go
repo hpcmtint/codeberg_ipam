@@ -6,32 +6,28 @@ package cmd
 
 import (
 	"fmt"
+	"net"
+	"os"
 
 	"github.com/spf13/cobra"
 )
 
 // addCmd represents the add command
 var subnetaddCmd = &cobra.Command{
-	Use:   "add [subnet] [vlan]",
-	Short: "Add a new subnet",
-	Long: `Add a new subnet`,
+	Use:     "add subnet [vlan]",
+	Short:   "Add a new subnet",
+	Long:    `Add a new subnet`,
+	Args:    cobra.RangeArgs(1, 2),
+	Aliases: []string{"a"},
 	Run: func(cmd *cobra.Command, args []string) {
 		var subnet string
 		var vlanid string
-
-		if len(args) == 0 {
-			fmt.Printf("IP Subnet (Format: 192.168.0.0/24): ")
-			fmt.Scan(&subnet)
-
-			fmt.Printf("VLAN Tag: ")
-			fmt.Scan(&vlanid)
-		}
+		var netname string
 
 		if len(args) == 1 {
 			subnet = args[0]
 
-			fmt.Printf("VLAN Tag: ")
-			fmt.Scan(&vlanid)
+			vlanid = "-"
 		}
 
 		if len(args) == 2 {
@@ -39,7 +35,34 @@ var subnetaddCmd = &cobra.Command{
 			vlanid = args[1]
 		}
 
-		fmt.Printf("Adding Subnet %v with VLAN Tag %v.\n", subnet, vlanid)
+		// Parse subnet into ParseCIDR to test if it's a valid subnet
+		_, ipnet, err := net.ParseCIDR(subnet)
+
+		// Exit if parsed value is no valid IP
+		if err != nil {
+			fmt.Println("[ERROR]", err)
+			os.Exit(1)
+		}
+
+		// Exit if parsed value is an IPv6 Address
+		// TODO: Implement IPv6 support
+		if ipnet.IP.To4() == nil {
+			fmt.Printf("[ERROR] IPv6 is not yet supported!\n")
+			os.Exit(1)
+		}
+
+		// Ask for Subnet Name
+		// TODO: Check if net name only contains letters, numbers and hyphens
+		fmt.Printf("Subnet name: ")
+		fmt.Scan(&netname)
+
+		if vlanid == "-" {
+			fmt.Printf("Adding Subnet %v.\n", subnet)
+		} else {
+			fmt.Printf("Adding Subnet %v with VLAN Tag %v.\n", subnet, vlanid)
+		}
+
+		// TODO: Save subnet to file
 	},
 }
 

@@ -6,22 +6,53 @@ package cmd
 
 import (
 	"fmt"
+	"net"
+	"os"
 
 	"github.com/spf13/cobra"
 )
 
-// addCmd represents the add command
 var ipaddCmd = &cobra.Command{
-	Use:   "add",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Use:     "add ipaddress [hostname]",
+	Short:   "Add new IP address",
+	Long:    `Add new IP address`,
+	Aliases: []string{"a"},
+	Args:    cobra.RangeArgs(1, 2),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("ip add called")
+		var ipaddress, hostname string
+
+		if len(args) == 1 {
+			ipaddress = args[0]
+			hostname = ""
+		} else {
+			ipaddress = args[0]
+			hostname = args[1]
+		}
+
+		ip := net.ParseIP(ipaddress)
+
+		// Exit if parsed value is no valid IP
+		if ip == nil {
+			fmt.Printf("[ERROR] not a valid IP: %v\n", ipaddress)
+			os.Exit(1)
+		}
+
+		// Exit if parsed value is an IPv6 Address
+		// TODO: Implement IPv6 support
+		if ip.To4() == nil {
+			fmt.Printf("[ERROR] IPv6 is not yet supported!\n")
+			os.Exit(1)
+		}
+
+		// TODO: Check if there is already a subnet that can contain this IP, err if not
+
+		if hostname == "" {
+			fmt.Printf("Adding IP %v\n", ipaddress)
+		} else {
+			fmt.Printf("Adding IP %v with hostname %v\n", ipaddress, hostname)
+		}
+
+		// TODO: Save to file
 	},
 }
 
