@@ -6,7 +6,7 @@ package cmd
 
 import (
 	"fmt"
-	"net"
+	"net/netip"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -29,30 +29,42 @@ var ipaddCmd = &cobra.Command{
 			hostname = args[1]
 		}
 
-		ip := net.ParseIP(ipaddress)
+		ip, parseerr := netip.ParseAddr(ipaddress)
 
 		// Exit if parsed value is no valid IP
-		if ip == nil {
-			fmt.Printf("[ERROR] not a valid IP: %v\n", ipaddress)
+		if parseerr != nil {
+			fmt.Println("[ERROR]", parseerr)
 			os.Exit(1)
 		}
 
 		// Exit if parsed value is an IPv6 Address
 		// TODO: Implement IPv6 support
-		if ip.To4() == nil {
+		if !ip.Is4() {
 			fmt.Printf("[ERROR] IPv6 is not yet supported!\n")
 			os.Exit(1)
 		}
 
-		// TODO: Check if there is already a subnet that can contain this IP, err if not
+		subnet, subnetexists := SearchBestSubnet(ip)
 
-		if hostname == "" {
-			fmt.Printf("Adding IP %v\n", ipaddress)
-		} else {
-			fmt.Printf("Adding IP %v with hostname %v\n", ipaddress, hostname)
+		if !subnetexists {
+			fmt.Printf("[ERROR] Found no suitable subnet for IP %v\n", ipaddress)
+			fmt.Printf("[ERROR] Maybe you need to add it first?\n")
+			os.Exit(1)
 		}
 
-		// TODO: Save to file
+		subnet.Addresses = append(subnet.Addresses, Address{ip.String(), hostname})
+
+		writeerr := WriteSubnet(subnet)
+		if writeerr != nil {
+			fmt.Println("[ERROR]", writeerr)
+			os.Exit(1)
+		}
+
+		if hostname == "" {
+			fmt.Printf("added ip:\nip: %v\n", ipaddress)
+		} else {
+			fmt.Printf("added ip:\nip: %v\nhostname: %v\n", ipaddress, hostname)
+		}
 	},
 }
 

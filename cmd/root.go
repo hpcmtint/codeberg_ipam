@@ -84,7 +84,4 @@ func initConfig() {
 			println("[ERROR] Can't read config file!", err)
 		}
 	}
-
-	fmt.Println(viper.AllKeys())
-
 }
