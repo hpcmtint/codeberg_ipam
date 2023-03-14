@@ -52,6 +52,11 @@ var ipaddCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		if subnet.HasIP(ip) {
+			fmt.Printf("[ERROR] IP %v already exists in subnet %v\n", ip.String(), subnet.Subnet.String())
+			os.Exit(1)
+		}
+
 		subnet.Addresses = append(subnet.Addresses, Address{ip, hostname})
 
 		writeerr := WriteSubnet(subnet)

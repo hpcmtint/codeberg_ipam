@@ -5,6 +5,10 @@ package cmd
 
 import (
 	"fmt"
+	"math"
+	"net/netip"
+	"os"
+	"sort"
 
 	"github.com/spf13/cobra"
 )
@@ -16,8 +20,43 @@ var subnetlistCmd = &cobra.Command{
 	Long:    `List all subnets`,
 	Aliases: []string{"l"},
 	Args:    cobra.ExactArgs(0),
+	Example: "cmdb subnet list",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("subnet list called")
+		verbose, _ := cmd.Flags().GetBool("verbose")
+		subnetlist := ListSubnets()
+		var subnets []Subnet
+
+		for _, subnet := range subnetlist {
+			prefix, _ := netip.ParsePrefix(subnet)
+			net, err := GetSubnet(prefix)
+			if err != nil {
+				fmt.Println("[ERROR]", err)
+				os.Exit(1)
+			}
+			subnets = append(subnets, net)
+		}
+		sort.Slice(subnets, func(i, j int) bool {
+			return subnets[i].Subnet.Addr().Less(subnets[j].Subnet.Addr())
+		})
+
+		for _, subnet := range subnets {
+			if verbose {
+				var numip, freeip int
+
+				if subnet.Subnet.Addr().Is4() {
+					hostbits := float64(32 - subnet.Subnet.Bits())
+					numip = int(math.Pow(2, hostbits)) - 2
+					freeip = numip - len(subnet.Addresses)
+
+					fmt.Printf("%v:\t%v\t(vl: %v)\tfree: %v\n", subnet.Subnet, subnet.Name, subnet.Vlan, freeip)
+				} else {
+					fmt.Printf("%v:\t%v\t(vl: %v)\n", subnet.Subnet, subnet.Name, subnet.Vlan)
+				}
+			} else {
+				fmt.Printf("%v:\t%v\t(vl: %v)\n", subnet.Subnet, subnet.Name, subnet.Vlan)
+			}
+
+		}
 	},
 }
 
@@ -32,5 +71,5 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// listCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	subnetlistCmd.Flags().BoolP("verbose", "v", false, "Show verbose output like free IPs")
 }

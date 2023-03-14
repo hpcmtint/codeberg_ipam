@@ -4,8 +4,6 @@ Copyright © 2023 Laura Kalb <dev@lauka.net>
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -16,8 +14,8 @@ var ipdeleteCmd = &cobra.Command{
 	Long:    `Delete an IP address`,
 	Aliases: []string{"d"},
 	Args:    cobra.ExactArgs(1),
+	Example: "ipam ip delete 192.168.0.1",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("ip delete called")
 	},
 }
 

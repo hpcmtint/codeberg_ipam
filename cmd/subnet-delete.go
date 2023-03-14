@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"net/netip"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -17,20 +18,27 @@ var subnetdeleteCmd = &cobra.Command{
 	Long:    `Delete a subnet from the ipam.`,
 	Args:    cobra.ExactArgs(1),
 	Aliases: []string{"d"},
+	Example: "ipam subnet delete 192.168.0.0/24",
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1 {
-			fmt.Println("Error: Too few arguments!")
-			fmt.Print("Usage:\n  ipam subnet delete [subnet]")
+		subnet, parseerr := netip.ParsePrefix(args[0])
+		if parseerr != nil {
+			fmt.Println("[ERROR]", parseerr)
 			os.Exit(1)
 		}
-		if len(args) > 1 {
-			fmt.Println("Error: Too many arguments!")
-			fmt.Print("Usage:\n  ipam subnet delete [subnet]")
-			os.Exit(1)
-		}
-		subnet := args[0]
 
-		fmt.Printf("Deleting %v\n", subnet)
+		var confirmation string
+		fmt.Printf("[WARNING] Do you really want to delete subnet %v? [y/N] ", subnet.String())
+		fmt.Scan(&confirmation)
+
+		if (confirmation == "y") || (confirmation == "Y") {
+			deleteerr := DeleteSubnet(subnet)
+			if deleteerr != nil {
+				fmt.Println("[ERROR]", deleteerr)
+				os.Exit(1)
+			} else {
+				fmt.Printf("deleted subnet %v\n", subnet.String())
+			}
+		}
 	},
 }
 

@@ -38,7 +38,7 @@ var subnetaddCmd = &cobra.Command{
 
 		// Parse subnet into ParseCIDR to test if it's a valid subnet
 		// _, ipnet, err := net.ParseCIDR(subnet)
-		ipnet, err := netip.ParsePrefix(subnet)
+		ipnet, parseerr := netip.ParsePrefix(subnet)
 
 		// Exit if subnet already exists, no need to add it then
 		if SubnetExists(ipnet) {
@@ -47,8 +47,8 @@ var subnetaddCmd = &cobra.Command{
 		}
 
 		// Exit if parsed value is no valid IP
-		if err != nil {
-			fmt.Println("[ERROR]", err)
+		if parseerr != nil {
+			fmt.Println("[ERROR]", parseerr)
 			os.Exit(1)
 		}
 
@@ -67,15 +67,11 @@ var subnetaddCmd = &cobra.Command{
 		writeerr := WriteSubnet(subnetobject)
 
 		if writeerr != nil {
-			fmt.Println("[ERROR]", err)
+			fmt.Println("[ERROR]", writeerr)
 			os.Exit(1)
 		}
 
-		if vlanid == "-" {
-			fmt.Printf("added subnet:\nnet: %v\nname: %v\n", subnet, netname)
-		} else {
-			fmt.Printf("added subnet:\nnet: %v\nname: %v\nvlan: %v\n", subnet, netname, vlanid)
-		}
+		fmt.Printf("added subnet:\nnet: %v\nname: %v\nvlan: %v\n", subnet, netname, vlanid)
 	},
 }
 

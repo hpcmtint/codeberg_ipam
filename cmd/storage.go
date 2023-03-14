@@ -15,18 +15,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Subnet struct {
-	Subnet    netip.Prefix
-	Name      string
-	Vlan      string
-	Addresses []Address
-}
-
-type Address struct {
-	IP   netip.Addr
-	FQDN string
-}
-
 // SearchBestSubnet tries to load the most fitting IP subnet file
 // on disk. It takes an IP object and tries to get the best subnet
 // (meaning the subnet with the smallest subnet size).
@@ -217,4 +205,20 @@ func SortAddresses(list []Address) []Address {
 		return list[i].IP.Less(list[j].IP)
 	})
 	return list
+}
+
+// DeleteSubnet deletes the subnet file on disk for netip.Prefix
+// net.
+//
+// Returns nil on success, or a *PathError on failure
+func DeleteSubnet(net netip.Prefix) error {
+	var datadir string = viper.GetString("DataPath")
+	filename := datadir + strings.Replace(net.String(), "/", "_", 1)
+
+	removeerr := os.Remove(filename)
+	if removeerr != nil {
+		return removeerr
+	} else {
+		return nil
+	}
 }
