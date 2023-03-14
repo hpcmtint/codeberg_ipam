@@ -62,8 +62,10 @@ func initConfig() {
 	viper.SetConfigName("ipam")
 	viper.SetConfigType("yaml")
 
+	viper.SetDefault("DataPath", ipamdir+"data/")
 	viper.SetDefault("EnablePowerDNS", false)
-	viper.SetDefault("DataPath", ipamdir+"/data/")
+	viper.SetDefault("PowerDNSEndpoint", "")
+	viper.SetDefault("PowerDNSApiKey", "")
 
 	if err := viper.ReadInConfig(); err != nil {
 		_, patherr := os.Stat(ipamdir)
