@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/netip"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -22,7 +23,7 @@ type Subnet struct {
 }
 
 type Address struct {
-	IP   string
+	IP   netip.Addr
 	FQDN string
 }
 
@@ -142,8 +143,9 @@ func WriteSubnet(subnet Subnet) error {
 	}
 
 	if len(subnet.Addresses) != 0 {
-		for _, element := range subnet.Addresses {
-			_, err := file.WriteString(element.IP + ":" + element.FQDN + "\n")
+		subnetsorted := SortAddresses(subnet.Addresses)
+		for _, element := range subnetsorted {
+			_, err := file.WriteString(element.IP.String() + ":" + element.FQDN + "\n")
 			if err != nil {
 				fmt.Println("[ERROR]", err)
 				os.Exit(1)
@@ -189,7 +191,8 @@ func GetSubnet(net netip.Prefix) (Subnet, error) {
 
 		default:
 			s := strings.Split(scanner.Text(), ":")
-			a := Address{s[0], s[1]}
+			ip, _ := netip.ParseAddr(s[0])
+			a := Address{ip, s[1]}
 			subnet.Addresses = append(subnet.Addresses, a)
 		}
 		counter = counter + 1
@@ -200,4 +203,18 @@ func GetSubnet(net netip.Prefix) (Subnet, error) {
 	}
 
 	return subnet, nil
+}
+
+// SortAddresses sorts the given list of IP addresses
+// using netip.Addr.Less() and returns the sorted slice.
+func SortAddresses(list []Address) []Address {
+
+	if len(list) <= 1 {
+		return list
+	}
+
+	sort.Slice(list, func(i, j int) bool {
+		return list[i].IP.Less(list[j].IP)
+	})
+	return list
 }

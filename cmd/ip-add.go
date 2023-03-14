@@ -52,7 +52,7 @@ var ipaddCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		subnet.Addresses = append(subnet.Addresses, Address{ip.String(), hostname})
+		subnet.Addresses = append(subnet.Addresses, Address{ip, hostname})
 
 		writeerr := WriteSubnet(subnet)
 		if writeerr != nil {
