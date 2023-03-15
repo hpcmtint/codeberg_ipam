@@ -15,13 +15,13 @@ import (
 	"github.com/spf13/viper"
 )
 
-// SearchBestSubnet tries to load the most fitting IP subnet file
+// FindBestSubnet tries to load the most fitting IP subnet file
 // on disk. It takes an IP object and tries to get the best subnet
 // (meaning the subnet with the smallest subnet size).
 //
 // Returns the best subnet as Subnet object and true if a suitable
 // subnet was found, otherwise an empty Subnet object and false.
-func SearchBestSubnet(ip netip.Addr) (Subnet, bool) {
+func FindBestSubnet(ip netip.Addr) (Subnet, bool) {
 	subnets := ListSubnets()
 	var smallestprefix int = 0
 	bestmatch, _ := netip.ParsePrefix("0.0.0.0/32")
