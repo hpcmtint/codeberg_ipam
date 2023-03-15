@@ -26,6 +26,11 @@ var subnetdeleteCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		if !SubnetExists(subnet) {
+			fmt.Printf("[ERROR] Couldn't find subnet %v\n", subnet.String())
+			os.Exit(1)
+		}
+
 		var confirmation string
 		fmt.Printf("[WARNING] Do you really want to delete subnet %v? [y/N] ", subnet.String())
 		fmt.Scan(&confirmation)
