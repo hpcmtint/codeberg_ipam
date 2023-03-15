@@ -21,7 +21,7 @@
 go.work
 
 # build output
-output/
+bin/
 
 # vs code stuff
 .vscode/

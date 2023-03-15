@@ -5,6 +5,8 @@ package cmd
 
 import (
 	"fmt"
+	"net/netip"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -16,8 +18,30 @@ var ipshowCmd = &cobra.Command{
 	Long:    `Show IP and associated name`,
 	Aliases: []string{"s"},
 	Args:    cobra.ExactArgs(1),
+	Example: "ipam ip show 192.168.0.1",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("ip show called")
+		ip, parseerr := netip.ParseAddr(args[0])
+
+		if parseerr != nil {
+			fmt.Println("[ERROR]", parseerr)
+			os.Exit(1)
+		}
+
+		subnet, subnetexists := FindBestSubnet(ip)
+		if !subnetexists {
+			fmt.Printf("[ERROR] Couldn't find IP %v\n", ip.String())
+			os.Exit(1)
+		}
+
+		addr, addrexists := subnet.GetIP(ip)
+		if !addrexists {
+			fmt.Printf("[ERROR] Couldn't find IP %v\n", ip.String())
+			os.Exit(1)
+		}
+
+		fmt.Printf("IP:       %v\n", ip.String())
+		fmt.Printf("FQDN:     %v\n", addr.FQDN)
+		fmt.Printf("Subnet:   %v (%v)\n", subnet.Subnet.String(), subnet.Name)
 	},
 }
 

@@ -4,6 +4,10 @@ Copyright © 2023 Laura Kalb <dev@lauka.net>
 package cmd
 
 import (
+	"fmt"
+	"net/netip"
+	"os"
+
 	"github.com/spf13/cobra"
 )
 
@@ -16,6 +20,38 @@ var ipdeleteCmd = &cobra.Command{
 	Args:    cobra.ExactArgs(1),
 	Example: "ipam ip delete 192.168.0.1",
 	Run: func(cmd *cobra.Command, args []string) {
+		ip, parseerr := netip.ParseAddr(args[0])
+
+		if parseerr != nil {
+			fmt.Println("[ERROR]", parseerr)
+			os.Exit(1)
+		}
+
+		subnet, subnetexists := FindBestSubnet(ip)
+		if !subnetexists {
+			fmt.Printf("[ERROR] Couldn't find IP %v\n", ip.String())
+			os.Exit(1)
+		}
+
+		address, _ := subnet.GetIP(ip)
+
+		subnet, removeerr := subnet.RemoveIP(ip)
+		if removeerr != nil {
+			fmt.Println("[ERROR]", removeerr)
+			os.Exit(1)
+		}
+
+		writeerr := WriteSubnet(subnet)
+		if writeerr != nil {
+			fmt.Println("[ERROR]", writeerr)
+			os.Exit(1)
+		}
+
+		if address.FQDN == "" {
+			fmt.Printf("deleted ip %v\n", address.IP.String())
+		} else {
+			fmt.Printf("deleted ip %v (%v)\n", address.IP.String(), address.FQDN)
+		}
 	},
 }
 

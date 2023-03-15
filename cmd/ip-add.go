@@ -44,7 +44,7 @@ var ipaddCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		subnet, subnetexists := SearchBestSubnet(ip)
+		subnet, subnetexists := FindBestSubnet(ip)
 
 		if !subnetexists {
 			fmt.Printf("[ERROR] Found no suitable subnet for IP %v\n", ipaddress)

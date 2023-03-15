@@ -5,6 +5,7 @@ Copyright © 2023 Laura Kalb <dev@lauka.net>
 package cmd
 
 import (
+	"errors"
 	"net/netip"
 )
 
@@ -29,12 +30,42 @@ func (s Subnet) HasIP(ip netip.Addr) bool {
 	return iscontained
 }
 
-func (s Subnet) RemoveIP(ip netip.Addr) bool {
-	return true
+// RemoveIP removes the Address object for given ip from
+// the Address list of the subnet.
+//
+// Returns the changed Subnet and nil if delete was
+// successful, or an empty Subnet and an error if
+// ip could not be deleted.
+func (s Subnet) RemoveIP(ip netip.Addr) (Subnet, error) {
+	var addrlist []Address
+
+	if !s.HasIP(ip) {
+
+		return Subnet{}, errors.New("IP " + ip.String() + " wasn't found in subnet " + s.Subnet.String())
+	}
+
+	for _, item := range s.Addresses {
+		if item.IP.Compare(ip) != 0 {
+			addrlist = append(addrlist, item)
+		}
+	}
+	s.Addresses = addrlist
+	return s, nil
 }
 
-func (s Subnet) GetIP(ip netip.Addr) bool {
-	return true
+// GetIP returns the Address object for the subnet with
+// netip.Addr ip.
+//
+// Returns the Address object and true if a corresponding
+// object was found, an empty Address and false otherwise.
+func (s Subnet) GetIP(ip netip.Addr) (Address, bool) {
+	for _, item := range s.Addresses {
+		if item.IP.Compare(ip) == 0 {
+			return item, true
+		}
+	}
+
+	return Address{}, false
 }
 
 type Address struct {

@@ -16,7 +16,7 @@ var ipeditCmd = &cobra.Command{
 	Aliases: []string{"e"},
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("edit called")
+		fmt.Println("not implemented yet; please delete and readd")
 	},
 }
 
