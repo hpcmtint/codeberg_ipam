@@ -22,7 +22,7 @@ var subnetlistCmd = &cobra.Command{
 	Args:    cobra.ExactArgs(0),
 	Example: "cmdb subnet list",
 	Run: func(cmd *cobra.Command, args []string) {
-		verbose, _ := cmd.Flags().GetBool("verbose")
+		//verbose, _ := cmd.Flags().GetBool("verbose")
 		subnetlist := ListSubnets()
 		var subnets []Subnet
 
@@ -40,21 +40,21 @@ var subnetlistCmd = &cobra.Command{
 		})
 
 		for _, subnet := range subnets {
-			if verbose {
-				var numip, freeip int
+			//if verbose {
+			var numip, freeip int
 
-				if subnet.Subnet.Addr().Is4() {
-					hostbits := float64(32 - subnet.Subnet.Bits())
-					numip = int(math.Pow(2, hostbits)) - 2
-					freeip = numip - len(subnet.Addresses)
+			if subnet.Subnet.Addr().Is4() {
+				hostbits := float64(32 - subnet.Subnet.Bits())
+				numip = int(math.Pow(2, hostbits)) - 2
+				freeip = numip - len(subnet.Addresses)
 
-					fmt.Printf("%v:\t%v\t(vl: %v)\tfree: %v\n", subnet.Subnet, subnet.Name, subnet.Vlan, freeip)
-				} else {
-					fmt.Printf("%v:\t%v\t(vl: %v)\n", subnet.Subnet, subnet.Name, subnet.Vlan)
-				}
+				fmt.Printf("%v:\t%v\t(vl: %v)\tfree: %v\n", subnet.Subnet, subnet.Name, subnet.Vlan, freeip)
 			} else {
 				fmt.Printf("%v:\t%v\t(vl: %v)\n", subnet.Subnet, subnet.Name, subnet.Vlan)
 			}
+			//} else {
+			//    fmt.Printf("%v:\t%v\t(vl: %v)\n", subnet.Subnet, subnet.Name, subnet.Vlan)
+			//}
 
 		}
 	},
@@ -71,5 +71,5 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	subnetlistCmd.Flags().BoolP("verbose", "v", false, "Show verbose output like free IPs")
+	// subnetlistCmd.Flags().BoolP("verbose", "v", false, "Show verbose output like free IPs")
 }

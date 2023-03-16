@@ -63,7 +63,7 @@ func initConfig() {
 	viper.SetConfigType("yaml")
 
 	viper.SetDefault("DataPath", ipamdir+"data/")
-	viper.SetDefault("EnablePowerDNS", false)
+	viper.SetDefault("PowerDNSEnabled", false)
 	viper.SetDefault("PowerDNSEndpoint", "")
 	viper.SetDefault("PowerDNSApiKey", "")
 

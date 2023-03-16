@@ -15,8 +15,8 @@ var importCmd = &cobra.Command{
 	Use:   "import",
 	Short: "Import ipam configuration (not implemented)",
 	Long: `Import ips and subnets to ipam.
-	
-	Not implemented yet.`,
+    
+    Not implemented yet.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Not implemented")
 	},

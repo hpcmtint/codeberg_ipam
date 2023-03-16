@@ -15,8 +15,8 @@ var exportCmd = &cobra.Command{
 	Use:   "export",
 	Short: "Export current ipam configuration (not implemented)",
 	Long: `Export current ipam contents to importable data format.
-	
-	Not implemented yet.`,
+    
+    Not implemented yet.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Not implemented")
 	},
