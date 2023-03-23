@@ -69,6 +69,11 @@ var ipaddCmd = &cobra.Command{
 			fmt.Printf("added ip:\nip: %v\n", ipaddress)
 		} else {
 			fmt.Printf("added ip:\nip: %v\nhostname: %v\n", ipaddress, hostname)
+			dnserr := AddDNSFqdn(hostname, ip)
+			if dnserr != nil {
+				fmt.Println("[ERROR]", writeerr)
+				os.Exit(1)
+			}
 		}
 	},
 }

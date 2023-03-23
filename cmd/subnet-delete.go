@@ -31,11 +31,28 @@ var subnetdeleteCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		subnetobj, suberr := GetSubnet(subnet)
+		if suberr != nil {
+			fmt.Println("[ERROR]", suberr)
+			os.Exit(1)
+		}
+
 		var confirmation string
-		fmt.Printf("[WARNING] Do you really want to delete subnet %v? [y/N] ", subnet.String())
-		fmt.Scan(&confirmation)
+		fmt.Printf("[WARNING] Do you really want to delete subnet %v?\n", subnet.String())
+		fmt.Printf("[WARNING] This will also delete all DNS records if PowerDNS integration is enabled!\n")
+		fmt.Printf("[WARNING] Continue? [y/N] ")
+		//fmt.Scan(&confirmation)
+		confirmation = "y"
 
 		if (confirmation == "y") || (confirmation == "Y") {
+			for _, address := range subnetobj.Addresses {
+				if address.FQDN != "" {
+					deleteerr := DeleteDNSFqdn(address.FQDN, address.IP)
+					if deleteerr != nil {
+						fmt.Println("[ERROR]", deleteerr)
+					}
+				}
+			}
 			deleteerr := DeleteSubnet(subnet)
 			if deleteerr != nil {
 				fmt.Println("[ERROR]", deleteerr)
@@ -43,6 +60,7 @@ var subnetdeleteCmd = &cobra.Command{
 			} else {
 				fmt.Printf("deleted subnet %v\n", subnet.String())
 			}
+
 		}
 	},
 }
@@ -59,4 +77,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// deleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	subnetdeleteCmd.Flags().BoolP("yes", "y", false, "suppress interactive prompts and answer yes.")
 }

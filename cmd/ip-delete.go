@@ -51,6 +51,11 @@ var ipdeleteCmd = &cobra.Command{
 			fmt.Printf("deleted ip %v\n", address.IP.String())
 		} else {
 			fmt.Printf("deleted ip %v (%v)\n", address.IP.String(), address.FQDN)
+			dnserr := DeleteDNSFqdn(address.FQDN, address.IP)
+			if dnserr != nil {
+				fmt.Println("[ERROR]", writeerr)
+				os.Exit(1)
+			}
 		}
 	},
 }

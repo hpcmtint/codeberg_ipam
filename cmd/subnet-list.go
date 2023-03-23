@@ -45,7 +45,12 @@ var subnetlistCmd = &cobra.Command{
 
 			if subnet.Subnet.Addr().Is4() {
 				hostbits := float64(32 - subnet.Subnet.Bits())
-				numip = int(math.Pow(2, hostbits)) - 2
+				if subnet.Subnet.Bits() == 31 {
+					numip = 2
+				} else {
+					numip = int(math.Pow(2, hostbits)) - 2
+				}
+
 				freeip = numip - len(subnet.Addresses)
 
 				fmt.Printf("%v:\t%v\t(vl: %v)\tfree: %v\n", subnet.Subnet, subnet.Name, subnet.Vlan, freeip)
