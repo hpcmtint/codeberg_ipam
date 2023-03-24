@@ -5,33 +5,72 @@ Copyright © 2023 Laura Kalb <dev@lauka.net>
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
+	"path"
+	"time"
 
 	"github.com/spf13/cobra"
 )
 
-// importCmd represents the import command
 var importCmd = &cobra.Command{
-	Use:   "import",
-	Short: "Import ipam configuration (not implemented)",
-	Long: `Import ips and subnets to ipam.
-    
-    Not implemented yet.`,
+	Use:     "import",
+	Short:   "Import ipam configuration (not implemented)",
+	Long:    `Import subnets to ipam.`,
+	Example: "ipam import --file import.json",
+	Args:    cobra.NoArgs,
+	Aliases: []string{"im"},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Not implemented")
+		var importname string
+		var subnets []Subnet
+
+		flagpath, _ := cmd.Flags().GetString("file")
+		if path.IsAbs(flagpath) {
+			importname = flagpath
+		} else {
+			wd, _ := os.Getwd()
+			importname = path.Join(wd, flagpath)
+		}
+
+		file, readerr := os.ReadFile(importname)
+		if readerr != nil {
+			fmt.Printf("[ERROR] Can't read file %v\n", importname)
+			fmt.Println(readerr)
+		}
+
+		marsherr := json.Unmarshal(file, &subnets)
+		if marsherr != nil {
+			fmt.Printf("[ERROR] Invalid format for file %v\n", importname)
+			fmt.Println(marsherr)
+		}
+
+		for _, subnet := range subnets {
+			fmt.Printf("[INFO] Start import of %v\n", subnet.Subnet.String())
+			subnet.ChangedBy = "ipam import"
+			subnet.ChangedAt = time.Now()
+
+			for _, addr := range subnet.Addresses {
+				addr.ChangedBy = "ipam import"
+				addr.ChangedAt = time.Now()
+				if addr.FQDN != "" {
+					AddDNSFqdn(addr.FQDN, addr.IP)
+				}
+			}
+
+			suberr := subnet.WriteSubnet()
+			if suberr != nil {
+				fmt.Printf("[ERROR] Can't write subnet to file %v\n", subnet.Subnet.String())
+				fmt.Println(suberr)
+			}
+			fmt.Printf("[INFO] Imported subnet %v successfully\n", subnet.Subnet.String())
+
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(importCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// importCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// importCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	importCmd.Flags().StringP("file", "f", "import.json", "File to use for import operation")
 }
