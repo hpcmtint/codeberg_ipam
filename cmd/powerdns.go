@@ -260,7 +260,8 @@ func GetBestDNSZone(fqdn string) (DNSZone, error) {
 }
 
 // AddDNSfqdn tries to create forward and reverse lookup records
-// for given fqdn with netip.Addr addr.
+// for given fqdn with netip.Addr addr, IF PowerDNS integration
+// is enabled.
 //
 // Returns nil on success, error otherwise
 func AddDNSFqdn(fqdn string, addr netip.Addr) error {
@@ -358,7 +359,7 @@ func DeleteDNSFqdn(fqdn string, addr netip.Addr) error {
 
 	fzone, fzoneerr := GetBestDNSZone(fqdn)
 	if fzoneerr != nil {
-		fmt.Printf("[DNS] No suitable zone found for %v, skipping DNS deletion op\n", fqdn)
+		fmt.Printf("[DNS] No suitable zone found for %v, skipping DNS delete op\n", fqdn)
 	} else {
 		_, frecordexists := fzone.GetRecord(fqdn, recordtype, addr.String())
 

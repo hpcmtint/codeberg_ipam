@@ -38,11 +38,15 @@ var subnetdeleteCmd = &cobra.Command{
 		}
 
 		var confirmation string
-		fmt.Printf("[WARNING] Do you really want to delete subnet %v?\n", subnet.String())
-		fmt.Printf("[WARNING] This will also delete all DNS records if PowerDNS integration is enabled!\n")
-		fmt.Printf("[WARNING] Continue? [y/N] ")
-		//fmt.Scan(&confirmation)
-		confirmation = "y"
+		skipinteractive, _ := cmd.Flags().GetBool("yes")
+		if skipinteractive {
+			confirmation = "y"
+		} else {
+			fmt.Printf("[WARNING] Do you really want to delete subnet %v?\n", subnet.String())
+			fmt.Printf("[WARNING] This will also delete all DNS records if PowerDNS integration is enabled!\n")
+			fmt.Printf("[WARNING] Continue? [y/N] ")
+			fmt.Scan(&confirmation)
+		}
 
 		if (confirmation == "y") || (confirmation == "Y") {
 			for _, address := range subnetobj.Addresses {

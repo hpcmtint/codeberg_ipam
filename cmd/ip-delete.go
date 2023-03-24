@@ -41,7 +41,7 @@ var ipdeleteCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		writeerr := WriteSubnet(subnet)
+		writeerr := subnet.WriteSubnet()
 		if writeerr != nil {
 			fmt.Println("[ERROR]", writeerr)
 			os.Exit(1)

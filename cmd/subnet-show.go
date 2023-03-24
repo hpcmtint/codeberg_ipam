@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/netip"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -38,9 +39,12 @@ aswell as a list of containing IP addresses`,
 			fmt.Println("[ERROR]", subneterr)
 			os.Exit(1)
 		}
-		fmt.Printf("\nName:      %v\n", subnet.Name)
-		fmt.Printf("Vlan:      %v\n", subnet.Vlan)
-		fmt.Printf("Prefix:    %v\n\n", subnet.Subnet)
+		fmt.Printf("\n")
+		fmt.Printf("Name:           %v\n", subnet.Name)
+		fmt.Printf("Vlan:           %v\n", subnet.Vlan)
+		fmt.Printf("Prefix:         %v\n", subnet.Subnet)
+		fmt.Printf("Modified at:    %v\n", subnet.ChangedAt.Format(time.RFC1123))
+		fmt.Printf("Modified by:    %v\n\n", subnet.ChangedBy)
 
 		fmt.Printf("%v:\n", subnet.Subnet)
 		for _, element := range subnet.Addresses {
