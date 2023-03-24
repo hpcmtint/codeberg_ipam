@@ -39,8 +39,9 @@ var subnetlistCmd = &cobra.Command{
 			return subnets[i].Subnet.Addr().Less(subnets[j].Subnet.Addr())
 		})
 
+		fmt.Printf("%-15s  VLAN  %-25s  Free IPs\n", "Prefix", "Name")
+
 		for _, subnet := range subnets {
-			//if verbose {
 			var numip, freeip int
 
 			if subnet.Subnet.Addr().Is4() {
@@ -53,9 +54,16 @@ var subnetlistCmd = &cobra.Command{
 
 				freeip = numip - len(subnet.Addresses)
 
-				fmt.Printf("%v:\t%v\t(vl: %v)\tfree: %v\n", subnet.Subnet, subnet.Name, subnet.Vlan, freeip)
+				if freeip > 1000 {
+
+					fmt.Printf("%-15s  %-4s  %-25s  >1000\n", subnet.Subnet, subnet.Vlan, subnet.Name)
+				} else {
+					//fmt.Printf("| %-20s | %-20s |\n", "vegetables", "fruits")
+					fmt.Printf("%-15s  %-4s  %-25s  %v\n", subnet.Subnet, subnet.Vlan, subnet.Name, freeip)
+				}
 			} else {
 				fmt.Printf("%v:\t%v\t(vl: %v)\n", subnet.Subnet, subnet.Name, subnet.Vlan)
+				//todo
 			}
 			//} else {
 			//    fmt.Printf("%v:\t%v\t(vl: %v)\n", subnet.Subnet, subnet.Name, subnet.Vlan)
