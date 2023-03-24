@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"net/netip"
 	"os"
+	"os/user"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -59,12 +61,16 @@ var subnetaddCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		currentuser, _ := user.Current()
+
 		subnetobject := Subnet{}
 		subnetobject.Subnet = ipnet
 		subnetobject.Name = netname
 		subnetobject.Vlan = vlanid
+		subnetobject.ChangedAt = time.Now()
+		subnetobject.ChangedBy = currentuser.Username
 
-		writeerr := WriteSubnet(subnetobject)
+		writeerr := subnetobject.WriteSubnet()
 
 		if writeerr != nil {
 			fmt.Println("[ERROR]", writeerr)

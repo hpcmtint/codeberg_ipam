@@ -5,7 +5,7 @@ Copyright © 2023 Laura Kalb <dev@lauka.net>
 package cmd
 
 import (
-	"bufio"
+	"encoding/json"
 	"fmt"
 	"net/netip"
 	"os"
@@ -81,7 +81,9 @@ func ListSubnets() []string {
 		os.Exit(1)
 	}
 	for _, element := range subnetfiles {
-		subnets = append(subnets, strings.Replace(element.Name(), "_", "/", 1))
+		a := strings.Replace(element.Name(), "_", "/", 1)
+		a = strings.Replace(a, ".json", "", 1)
+		subnets = append(subnets, a)
 	}
 
 	return subnets
@@ -91,7 +93,7 @@ func ListSubnets() []string {
 // file.
 //
 // Returns nil on success or the error that happened.
-func WriteSubnet(subnet Subnet) error {
+func (s Subnet) WriteSubnet() error {
 	var datadir string = viper.GetString("DataPath")
 
 	_, direrr := os.Stat(datadir)
@@ -103,7 +105,9 @@ func WriteSubnet(subnet Subnet) error {
 		}
 	}
 
-	filename := datadir + strings.Replace(subnet.Subnet.String(), "/", "_", 1)
+	filename := datadir + strings.Replace(s.Subnet.String(), "/", "_", 1) + ".json"
+
+	data, _ := json.Marshal(s)
 
 	file, fileerr := os.Create(filename)
 	if fileerr != nil {
@@ -112,33 +116,10 @@ func WriteSubnet(subnet Subnet) error {
 	}
 	defer file.Close()
 
-	_, suberr := file.WriteString(subnet.Subnet.String() + "\n")
-	if suberr != nil {
-		fmt.Println("[ERROR]", suberr)
+	_, writeerr := file.Write(data)
+	if writeerr != nil {
+		fmt.Println("[ERROR]", writeerr)
 		os.Exit(1)
-	}
-
-	_, nameerr := file.WriteString(subnet.Name + "\n")
-	if nameerr != nil {
-		fmt.Println("[ERROR]", nameerr)
-		os.Exit(1)
-	}
-
-	_, vlanerr := file.WriteString(subnet.Vlan + "\n")
-	if vlanerr != nil {
-		fmt.Println("[ERROR]", vlanerr)
-		os.Exit(1)
-	}
-
-	if len(subnet.Addresses) != 0 {
-		subnetsorted := SortAddresses(subnet.Addresses)
-		for _, element := range subnetsorted {
-			_, err := file.WriteString(element.IP.String() + ":" + element.FQDN + "\n")
-			if err != nil {
-				fmt.Println("[ERROR]", err)
-				os.Exit(1)
-			}
-		}
 	}
 
 	return nil
@@ -151,43 +132,17 @@ func WriteSubnet(subnet Subnet) error {
 // successful, an empty Subnet object and the error otherwise.
 func GetSubnet(net netip.Prefix) (Subnet, error) {
 	var datadir string = viper.GetString("DataPath")
-	filename := datadir + strings.Replace(net.String(), "/", "_", 1)
+	filename := datadir + strings.Replace(net.String(), "/", "_", 1) + ".json"
 	var subnet Subnet = Subnet{}
 
-	// open file
-	file, openerr := os.Open(filename)
-	if openerr != nil {
-		return Subnet{}, openerr
-	}
-	// remember to close the file at the end of the program
-	defer file.Close()
-
-	// read the file line by line using scanner
-	scanner := bufio.NewScanner(file)
-
-	var counter int = 0
-	for scanner.Scan() {
-		switch counter {
-		case 0:
-			subnet.Subnet, _ = netip.ParsePrefix(scanner.Text())
-
-		case 1:
-			subnet.Name = scanner.Text()
-
-		case 2:
-			subnet.Vlan = scanner.Text()
-
-		default:
-			s := strings.Split(scanner.Text(), ":")
-			ip, _ := netip.ParseAddr(s[0])
-			a := Address{ip, s[1]}
-			subnet.Addresses = append(subnet.Addresses, a)
-		}
-		counter = counter + 1
+	content, readerr := os.ReadFile(filename)
+	if readerr != nil {
+		return Subnet{}, readerr
 	}
 
-	if scanerr := scanner.Err(); scanerr != nil {
-		return Subnet{}, openerr
+	marsherr := json.Unmarshal(content, &subnet)
+	if marsherr != nil {
+		return Subnet{}, marsherr
 	}
 
 	return subnet, nil
@@ -213,7 +168,7 @@ func SortAddresses(list []Address) []Address {
 // Returns nil on success, or a *PathError on failure
 func DeleteSubnet(net netip.Prefix) error {
 	var datadir string = viper.GetString("DataPath")
-	filename := datadir + strings.Replace(net.String(), "/", "_", 1)
+	filename := datadir + strings.Replace(net.String(), "/", "_", 1) + ".json"
 
 	removeerr := os.Remove(filename)
 	if removeerr != nil {

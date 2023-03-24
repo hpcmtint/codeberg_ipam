@@ -7,13 +7,16 @@ package cmd
 import (
 	"errors"
 	"net/netip"
+	"time"
 )
 
 type Subnet struct {
-	Subnet    netip.Prefix
-	Name      string
-	Vlan      string
-	Addresses []Address
+	Subnet    netip.Prefix `json:"subnet"`
+	Name      string       `json:"name"`
+	Vlan      string       `json:"vlan"`
+	ChangedAt time.Time    `json:"changedat,omitempty"`
+	ChangedBy string       `json:"changedby,omitempty"`
+	Addresses []Address    `json:"addresses"`
 }
 
 // HasIP checks if a Subnet already contains given netip.Addr.
@@ -69,6 +72,8 @@ func (s Subnet) GetIP(ip netip.Addr) (Address, bool) {
 }
 
 type Address struct {
-	IP   netip.Addr
-	FQDN string
+	IP        netip.Addr `json:"ip"`
+	FQDN      string     `json:"fqdn"`
+	ChangedAt time.Time  `json:"changedat,omitempty"`
+	ChangedBy string     `json:"changedby,omitempty"`
 }

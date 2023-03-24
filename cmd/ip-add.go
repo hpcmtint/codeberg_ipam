@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"net/netip"
 	"os"
+	"os/user"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -57,9 +59,10 @@ var ipaddCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		subnet.Addresses = append(subnet.Addresses, Address{ip, hostname})
+		currentuser, _ := user.Current()
+		subnet.Addresses = append(subnet.Addresses, Address{ip, hostname, time.Now(), currentuser.Username})
 
-		writeerr := WriteSubnet(subnet)
+		writeerr := subnet.WriteSubnet()
 		if writeerr != nil {
 			fmt.Println("[ERROR]", writeerr)
 			os.Exit(1)
