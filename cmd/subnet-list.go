@@ -56,10 +56,10 @@ var subnetlistCmd = &cobra.Command{
 
 				if freeip > 1000 {
 
-					fmt.Printf("%-15s  %-4s  %-25s  >1000\n", subnet.Subnet, subnet.Vlan, subnet.Name)
+					fmt.Printf("%-18s  %-4s  %-25s  >1000\n", subnet.Subnet, subnet.Vlan, subnet.Name)
 				} else {
 					//fmt.Printf("| %-20s | %-20s |\n", "vegetables", "fruits")
-					fmt.Printf("%-15s  %-4s  %-25s  %v\n", subnet.Subnet, subnet.Vlan, subnet.Name, freeip)
+					fmt.Printf("%-18s  %-4s  %-25s  %v\n", subnet.Subnet, subnet.Vlan, subnet.Name, freeip)
 				}
 			} else {
 				fmt.Printf("%v:\t%v\t(vl: %v)\n", subnet.Subnet, subnet.Name, subnet.Vlan)
