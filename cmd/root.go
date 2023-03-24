@@ -12,16 +12,13 @@ import (
 	"github.com/spf13/viper"
 )
 
-// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "ipam",
 	Short: "A cli based ipam",
 	Long: `A cli based ipam. 
 You can manage subnets, single ip addresses within those, and the corresponding A records.
 PowerDNS and IPV6-Support will follow`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Version: ipam_version,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -34,18 +31,9 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.ipam.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.Flags().BoolP("debug", "d", false, "Enable debug mode. (may print sensitive Information, so please watch out!)")
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
 }
 
 func initConfig() {
