@@ -32,3 +32,4 @@ package:
 	mv bin/ipam ipam-${version}/usr/bin
 	ipam-${version}/usr/bin/ipam completion bash > ipam-${version}/usr/share/bash-completion/completions/ipam
 	dpkg-deb -Z xz --build ipam-${version}/
+	rm -rf ipam-${version}/
