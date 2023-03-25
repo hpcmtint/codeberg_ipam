@@ -24,7 +24,7 @@ import (
 func FindBestSubnet(ip netip.Addr) (Subnet, bool) {
     subnets := ListSubnets()
     var smallestprefix int = 0
-    bestmatch, _ := netip.ParsePrefix("0.0.0.0/32")
+    bestmatch, _ := netip.ParsePrefix("::/128")
     var isipv4 bool = ip.Is4()
     var subnet Subnet
 

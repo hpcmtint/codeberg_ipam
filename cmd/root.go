@@ -18,7 +18,7 @@ var rootCmd = &cobra.Command{
     Long: `A cli based ipam. 
 You can manage subnets, single ip addresses within those, and the corresponding A records.
 PowerDNS and IPV6-Support will follow`,
-    Version: ipam_version,
+    Version: ipamVersion,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

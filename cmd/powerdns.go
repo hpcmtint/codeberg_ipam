@@ -33,7 +33,7 @@ type Patch struct {
     Rrsets []DNSRecordSet `json:"rrsets"`
 }
 
-// Checks if a given Record already exists in the DNSRecordSet list.
+// GetRecord checks if a given Record already exists in the DNSRecordSet list.
 //
 // Returns the DNSRecordSet and true if record exists, empty
 // DNSRecordSet and false if not.
@@ -56,7 +56,7 @@ func (z DNSZone) GetRecord(fqdn string, rtype string, rcontent string) (DNSRecor
     return DNSRecordSet{}, false
 }
 
-// Sends a PATCH API request for DNSZone z. Returns error or nil
+// SendPATCH sends a PATCH API request for DNSZone z. Returns error or nil
 //
 // Example args for "test.example.com IN A 127.0.0.1"
 //
@@ -259,7 +259,7 @@ func GetBestDNSZone(fqdn string) (DNSZone, error) {
     return zone, nil
 }
 
-// AddDNSfqdn tries to create forward and reverse lookup records
+// AddDNSFqdn tries to create forward and reverse lookup records
 // for given fqdn with netip.Addr addr, IF PowerDNS integration
 // is enabled.
 //

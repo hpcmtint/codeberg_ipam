@@ -40,20 +40,41 @@ aswell as a list of containing IP addresses`,
             os.Exit(1)
         }
         fmt.Printf("\n")
-        fmt.Printf("Name:           %v\n", subnet.Name)
-        fmt.Printf("Vlan:           %v\n", subnet.Vlan)
-        fmt.Printf("Prefix:         %v\n", subnet.Subnet)
-        fmt.Printf("Modified at:    %v\n", subnet.ChangedAt.Format(time.RFC1123))
-        fmt.Printf("Modified by:    %v\n\n", subnet.ChangedBy)
+        fmt.Printf("Name:         %v\n", subnet.Name)
+        fmt.Printf("Vlan:         %v\n", subnet.Vlan)
+        fmt.Printf("Prefix:       %v\n", subnet.Subnet)
+        fmt.Printf("Modified at:  %v\n", subnet.ChangedAt.Format(time.RFC1123))
+        fmt.Printf("Modified by:  %v\n\n", subnet.ChangedBy)
 
-        fmt.Printf("%v:\n", subnet.Subnet)
-        for _, element := range subnet.Addresses {
-            if element.FQDN == "" {
-                fmt.Printf("\t%v\n", element.IP.String())
-            } else {
-                fmt.Printf("\t%v:  %v\n", element.IP.String(), element.FQDN)
+        //fmt.Printf("%v:\n", subnet.Subnet)
+
+        addrlist := SortAddresses(subnet.Addresses)
+
+        if subnet.Subnet.Addr().Is4() {
+
+            fmt.Printf("%-15s  Hostname\n", "IP Address")
+            for _, element := range addrlist {
+                if element.FQDN == "" {
+                    fmt.Printf("%v\n", element.IP.String())
+                } else {
+                    fmt.Printf("%-15s  %v\n", element.IP.String(), element.FQDN)
+                }
+            }
+        } else {
+
+            fmt.Printf("%-39s  Hostname\n", "IP Address")
+
+            for _, element := range addrlist {
+                if element.FQDN == "" {
+                    fmt.Printf("%v\n", element.IP.String())
+                } else {
+                    fmt.Printf("%-39s  %v\n", element.IP.String(), element.FQDN)
+                }
             }
         }
+
+
+
     },
 }
 

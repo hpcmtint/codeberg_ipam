@@ -7,6 +7,8 @@ import (
     "fmt"
     "net/netip"
     "os"
+    "os/user"
+    "time"
 
     "github.com/spf13/cobra"
 )
@@ -40,6 +42,10 @@ var ipdeleteCmd = &cobra.Command{
             fmt.Println("[ERROR]", removeerr)
             os.Exit(1)
         }
+
+        currentuser, _ := user.Current()
+        subnet.ChangedAt = time.Now()
+        subnet.ChangedBy = currentuser.Username
 
         writeerr := subnet.WriteSubnet()
         if writeerr != nil {

@@ -7,6 +7,7 @@ import (
     "fmt"
     "net/netip"
     "os"
+    "time"
 
     "github.com/spf13/cobra"
 )
@@ -39,9 +40,11 @@ var ipshowCmd = &cobra.Command{
             os.Exit(1)
         }
 
-        fmt.Printf("IP:       %v\n", ip.String())
-        fmt.Printf("FQDN:     %v\n", addr.FQDN)
-        fmt.Printf("Subnet:   %v (%v)\n", subnet.Subnet.String(), subnet.Name)
+        fmt.Printf("IP:          %v\n", ip.String())
+        fmt.Printf("FQDN:        %v\n", addr.FQDN)
+        fmt.Printf("Subnet:      %v (%v, vlan %v)\n", subnet.Subnet.String(), subnet.Name, subnet.Vlan)
+        fmt.Printf("Modified at: %v\n", subnet.ChangedAt.Format(time.RFC1123))
+        fmt.Printf("Modified by: %v\n", subnet.ChangedBy)
     },
 }
 

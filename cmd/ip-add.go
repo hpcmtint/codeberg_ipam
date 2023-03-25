@@ -41,10 +41,10 @@ var ipaddCmd = &cobra.Command{
 
         // Exit if parsed value is an IPv6 Address
         // TODO: Implement IPv6 support
-        if !ip.Is4() {
-            fmt.Printf("[ERROR] IPv6 is not yet supported!\n")
-            os.Exit(1)
-        }
+        //if !ip.Is4() {
+        //    fmt.Printf("[ERROR] IPv6 is not yet supported!\n")
+        //    os.Exit(1)
+        //}
 
         subnet, subnetexists := FindBestSubnet(ip)
 
@@ -60,7 +60,11 @@ var ipaddCmd = &cobra.Command{
         }
 
         currentuser, _ := user.Current()
-        subnet.Addresses = append(subnet.Addresses, Address{ip, hostname, time.Now(), currentuser.Username})
+        timestamp := time.Now()
+
+        subnet.Addresses = append(subnet.Addresses, Address{ip, hostname, timestamp, currentuser.Username})
+        subnet.ChangedBy = currentuser.Username
+        subnet.ChangedAt = timestamp
 
         writeerr := subnet.WriteSubnet()
         if writeerr != nil {
