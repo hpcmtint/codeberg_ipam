@@ -16,8 +16,8 @@ var rootCmd = &cobra.Command{
     Use:   "ipam",
     Short: "A cli based ipam",
     Long: `A cli based ipam. 
-You can manage subnets, single ip addresses within those, and the corresponding A records.
-PowerDNS and IPV6-Support will follow`,
+You can manage subnets and single IP addresses within those subnets.
+ipam can also manage the corresponding DNS records in your PowerDNS Instance.`,
     Version: ipamVersion,
 }
 

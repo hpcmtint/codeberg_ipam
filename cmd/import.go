@@ -16,7 +16,7 @@ import (
 
 var importCmd = &cobra.Command{
     Use:     "import",
-    Short:   "Import ipam configuration (not implemented)",
+    Short:   "Import ipam configuration",
     Long:    `Import subnets to ipam.`,
     Example: "ipam import --file import.json",
     Args:    cobra.NoArgs,

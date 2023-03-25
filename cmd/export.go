@@ -18,7 +18,7 @@ import (
 // exportCmd represents the export command
 var exportCmd = &cobra.Command{
     Use:   "export",
-    Short: "Export current ipam configuration (not implemented)",
+    Short: "Export ipam configuration",
     Long: `Export current ipam contents to importable data format.
 You can either export a single subnet or all subnets.`,
     Example: "ipam export\nipam export 192.168.0.0/24",

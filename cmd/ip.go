@@ -11,8 +11,8 @@ import (
 // ipCmd represents the ip command
 var ipCmd = &cobra.Command{
     Use:     "ip",
-    Short:   "manage ip addresses",
-    Long:    `Add, delete, edit and show IP addresses`,
+    Short:   "manage IP addresses",
+    Long:    `Add, delete and show IP addresses`,
     Aliases: []string{"i"},
 }
 

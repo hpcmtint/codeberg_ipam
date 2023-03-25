@@ -11,8 +11,8 @@ import (
 // subnetCmd represents the subnet command
 var subnetCmd = &cobra.Command{
     Use:     "subnet",
-    Short:   "Manage ip subnets",
-    Long:    `Manage ip subnets`,
+    Short:   "Manage IP subnets",
+    Long:    `Add, delete and show IP subnets`,
     Aliases: []string{"s"},
 }
 
