@@ -7,5 +7,5 @@ package main
 import "git.sr.ht/~lauralani/ipam/cmd"
 
 func main() {
-	cmd.Execute()
+    cmd.Execute()
 }
