@@ -4,5 +4,4 @@ pipeline:
     commands:
       - golangci-lint run
     when:
-      path: "*.go"
       event: ["push", "pull_request", "manual"]
