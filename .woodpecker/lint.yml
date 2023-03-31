@@ -2,6 +2,6 @@ pipeline:
   go-lint:
     image: golangci/golangci-lint
     commands:
-      - golangci-lint run
+      - golangci-lint run --verbose
     when:
       event: ["push", "pull_request", "manual"]
