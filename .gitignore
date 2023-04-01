@@ -23,5 +23,6 @@ go.work
 # build output
 bin/
 
-# vs code stuff
+# IDE stuff
 .vscode/
+.idea/
