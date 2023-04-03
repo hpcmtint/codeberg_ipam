@@ -229,7 +229,7 @@ func GetBestDNSZone(fqdn string) (DNSZone, error) {
 	}
 
 	var bestmatch DNSZone
-	var matchfound bool = false
+	var matchfound = false
 
 	for _, zone := range zones {
 		if strings.HasSuffix(fqdn, "."+zone.Name) {
@@ -288,7 +288,7 @@ func AddDNSFqdn(fqdn string, addr netip.Addr) error {
 		if frecordexists {
 			fmt.Printf("[DNS] DNS Record for %v already exists, no need to change DNS.\n", fqdn)
 		} else {
-			var dotfqdn, dotfzone string = fqdn + ".", "." + fzone.Name
+			var dotfqdn, dotfzone = fqdn + ".", "." + fzone.Name
 			record := strings.Replace(dotfqdn, dotfzone, "", 1)
 			fpatcherr := fzone.SendPATCH(record, addr.String(), recordtype, "REPLACE")
 			if fpatcherr != nil {
