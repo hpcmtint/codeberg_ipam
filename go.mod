@@ -1,4 +1,4 @@
-module git.sr.ht/~lauralani/ipam
+module codeberg.org/lauralani/ipam
 
 go 1.20
 
