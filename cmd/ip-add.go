@@ -15,67 +15,80 @@ import (
 )
 
 var ipaddCmd = &cobra.Command{
-	Use:     "add ipaddress [hostname]",
+	Use:     "add ipaddress|subnet [hostname]",
 	Short:   "Add new IP address",
-	Long:    `Add new IP address`,
+	Long:    `Adds a new IP address OR the next free IP address from a subnet`,
 	Aliases: []string{"a"},
 	Args:    cobra.RangeArgs(1, 2),
 	Run: func(cmd *cobra.Command, args []string) {
-		var ipaddress, hostname string
+		var iparg, hostname string
 
 		if len(args) == 1 {
-			ipaddress = args[0]
+			iparg = args[0]
 			hostname = ""
 		} else {
-			ipaddress = args[0]
+			iparg = args[0]
 			hostname = args[1]
 		}
 
-		ip, parseerr := netip.ParseAddr(ipaddress)
+		var bestsubnet Subnet
+		var ip netip.Addr
 
-		// Exit if parsed value is no valid IP
-		if parseerr != nil {
-			fmt.Println("[ERROR]", parseerr)
+		argip, ipparseerr := netip.ParseAddr(iparg)
+		argsubnet, subparseerr := netip.ParsePrefix(iparg)
+
+		if ipparseerr != nil && subparseerr != nil {
+			fmt.Printf("[ERROR] Argument is neither a valid IP address nor a valid Subnet: %v", iparg)
 			os.Exit(1)
-		}
+		} else if ipparseerr == nil && subparseerr != nil {
+			// argument was a single IP
+			var subnetexists bool
+			bestsubnet, subnetexists = FindBestSubnet(argip)
+			if !subnetexists {
+				fmt.Printf("[ERROR] Found no suitable subnet for IP %v\n", iparg)
+				fmt.Printf("[ERROR] Maybe you need to add it first?\n")
+				os.Exit(1)
+			}
+			if bestsubnet.HasIP(argip) {
+				fmt.Printf("[ERROR] IP %v already exists in subnet %v\n", argip.String(), bestsubnet.Subnet.String())
+				os.Exit(1)
+			}
+			ip = argip
 
-		// Exit if parsed value is an IPv6 Address
-		// TODO: Implement IPv6 support
-		//if !ip.Is4() {
-		//    fmt.Printf("[ERROR] IPv6 is not yet supported!\n")
-		//    os.Exit(1)
-		//}
+		} else if subparseerr == nil && ipparseerr != nil {
+			// argument was a subnet
+			var subneterr error
+			bestsubnet, subneterr = GetSubnet(argsubnet)
+			if subneterr != nil {
+				fmt.Println("[ERROR]", subneterr)
+				os.Exit(1)
+			}
+			ip = bestsubnet.FindFirstFreeIP()
 
-		subnet, subnetexists := FindBestSubnet(ip)
+			if !ip.IsValid() {
+				fmt.Printf("[ERROR] Found no free IP in Subnet %v\n", argsubnet.String())
+				os.Exit(1)
+			}
 
-		if !subnetexists {
-			fmt.Printf("[ERROR] Found no suitable subnet for IP %v\n", ipaddress)
-			fmt.Printf("[ERROR] Maybe you need to add it first?\n")
-			os.Exit(1)
-		}
-
-		if subnet.HasIP(ip) {
-			fmt.Printf("[ERROR] IP %v already exists in subnet %v\n", ip.String(), subnet.Subnet.String())
-			os.Exit(1)
 		}
 
 		currentuser, _ := user.Current()
 		timestamp := time.Now()
 
-		subnet.Addresses = append(subnet.Addresses, Address{ip, hostname, timestamp, currentuser.Username})
-		subnet.ChangedBy = currentuser.Username
-		subnet.ChangedAt = timestamp
+		bestsubnet.Addresses = append(bestsubnet.Addresses, Address{ip, hostname, timestamp, currentuser.Username})
+		bestsubnet.ChangedBy = currentuser.Username
+		bestsubnet.ChangedAt = timestamp
 
-		writeerr := subnet.WriteSubnet()
+		writeerr := bestsubnet.WriteSubnet()
 		if writeerr != nil {
 			fmt.Println("[ERROR]", writeerr)
 			os.Exit(1)
 		}
 
 		if hostname == "" {
-			fmt.Printf("added ip:\nip: %v\n", ipaddress)
+			fmt.Printf("added ip:\nip: %v\n", ip.String())
 		} else {
-			fmt.Printf("added ip:\nip: %v\nhostname: %v\n", ipaddress, hostname)
+			fmt.Printf("added ip:\nip: %v\nhostname: %v\n", ip.String(), hostname)
 			dnserr := AddDNSFqdn(hostname, ip)
 			if dnserr != nil {
 				fmt.Println("[ERROR]", dnserr)
