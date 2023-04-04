@@ -114,7 +114,13 @@ func (s Subnet) WriteSubnet() error {
 		fmt.Println("[ERROR]", fileerr)
 		os.Exit(1)
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			fmt.Println("[ERROR]", err)
+			os.Exit(1)
+		}
+	}(file)
 
 	_, writeerr := file.Write(data)
 	if writeerr != nil {
@@ -137,12 +143,12 @@ func GetSubnet(net netip.Prefix) (Subnet, error) {
 
 	content, readerr := os.ReadFile(filename)
 	if readerr != nil {
-		return Subnet{}, readerr
+		return Subnet{}, fmt.Errorf("can't open file for subnet %v for reading", net.String())
 	}
 
 	marsherr := json.Unmarshal(content, &subnet)
 	if marsherr != nil {
-		return Subnet{}, marsherr
+		return Subnet{}, fmt.Errorf("can't unmarshal file contents of file %v\n%v", filename, marsherr)
 	}
 
 	return subnet, nil

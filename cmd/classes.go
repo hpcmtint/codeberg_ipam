@@ -6,6 +6,7 @@ package cmd
 
 import (
 	"errors"
+	"math"
 	"net/netip"
 	"time"
 )
@@ -17,6 +18,21 @@ type Subnet struct {
 	ChangedAt time.Time    `json:"changedat,omitempty"`
 	ChangedBy string       `json:"changedby,omitempty"`
 	Addresses []Address    `json:"addresses"`
+}
+
+// GetIPCount gets the IP count for the Subnet
+//
+// Returns the IP count or -1 if it's a IPv6 prefix
+func (s Subnet) GetIPCount() int {
+	if !s.Subnet.Addr().Is4() {
+		return -1
+	}
+	hostbits := float64(32 - s.Subnet.Bits())
+	if s.Subnet.Bits() == 31 {
+		return 2
+	} else {
+		return int(math.Pow(2, hostbits)) - 2
+	}
 }
 
 // HasIP checks if a Subnet already contains given netip.Addr.
@@ -31,6 +47,42 @@ func (s Subnet) HasIP(ip netip.Addr) bool {
 	}
 
 	return iscontained
+}
+
+// FindFirstFreeIP finds and returns the next free netip.Addr
+// or an invalid netip.Addr if no free IP was found
+func (s Subnet) FindFirstFreeIP() netip.Addr {
+	var ip netip.Addr
+
+	if s.Subnet.Addr().Is4() {
+		subnetips := s.GetIPCount()
+
+		// handling /31 prefixes
+		if subnetips == 2 {
+			ip = s.Subnet.Addr()
+		} else {
+			ip = s.Subnet.Addr().Next()
+		}
+
+		// start at first free IP
+		for count := 0; count < subnetips; count++ {
+
+			if s.HasIP(ip) {
+				ip = ip.Next()
+			} else {
+				return ip
+			}
+		}
+	} else {
+		ip = s.Subnet.Addr().Next()
+		for ; s.Subnet.Contains(ip); ip = ip.Next() {
+			if !s.HasIP(ip) {
+				return ip
+			}
+		}
+	}
+
+	return netip.Addr{}
 }
 
 // RemoveIP removes the Address object for given ip from
