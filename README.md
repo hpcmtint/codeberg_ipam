@@ -19,13 +19,23 @@ quickly do stuff.
 So I sat down and started my first Go project and started developing this ipam.
 
 ## How do I use the cmdb?
-Coming soon
+`ipam` is built as a cli app. Once you installed `ipam` and added it to your `$PATH`, you can
+- add prefixes with `ipam subnet add 192.168.0.0/24 fancy-subnet-name`
+- add IPs to those prefixes with `ipam ip add 192.168.0.1 fqdn.example.com`
+- add the next free IP in a prefix with `ipam ip add 192.168.0.0/24 fqdn2.example.com`
+- much more (see `ipam (command) --help` for examples)
+If PowerDNS integration is enabled in `$HOME/.ipam/ipam.yml`, forward and reverse DNS records
+are automatically managed when you add or delete IP addresses with hostnames.
 
 ## How can I contribute to the development?
-Patches, bug reports or feature suggestions can be sent by email to
-[~lauralani/ipam@lists.sr.ht](mailto:~lauralani/ipam@lists.sr.ht). If you're
-not familiar with sending patches over email see
-[here](https://git-send-email.io/).
+The main development is happening at https://codeberg.org/lauralani/ipam.
+
+If you find a bug or would like a feature to get added you can 
+[create a new issue](https://codeberg.org/lauralani/ipam/issues)
+or collaborate by forking the repository and 
+[create a new pull request](https://codeberg.org/lauralani/ipam/pulls).
+
+If you have any questions please also feel free to create a new Issue!
 
 ## CLI
 ```
@@ -54,7 +64,7 @@ Use "ipam [command] --help" for more information about a command.
 ```
 
 ## License
-Copyright 2022 Laura Kalb <dev (at) lauka.net>
+Copyright 2023 Laura Kalb <dev (at) lauka.net>
 
 This program is Free Software: You can use, study share and improve it at your
 will. Specifically you can redistribute and/or modify it under the terms of the
