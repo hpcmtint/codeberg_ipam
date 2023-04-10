@@ -29,7 +29,7 @@ So I sat down and started my first Go project and started developing this ipam.
 If PowerDNS integration is enabled in `$HOME/.ipam/ipam.yml`, forward and reverse DNS records
 are automatically managed when you add or delete IP addresses with hostnames.
 
-[![Asciicast displaying the usage of the ipam app](https://asciinema.org/a/tT3SbtjsN9bmEE4QgKuanhNcX.svg)](https://asciinema.org/a/tT3SbtjsN9bmEE4QgKuanhNcX)
+[![Asciicast displaying the usage of the ipam app](docs/static/ipam-asciicast.svg)](https://asciinema.org/a/tT3SbtjsN9bmEE4QgKuanhNcX)
 
 ## How can I contribute to the development?
 The main development is happening at https://codeberg.org/lauralani/ipam.
