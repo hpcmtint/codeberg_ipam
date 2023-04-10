@@ -24,6 +24,8 @@ So I sat down and started my first Go project and started developing this ipam.
 - add IPs to those prefixes with `ipam ip add 192.168.0.1 fqdn.example.com`
 - add the next free IP in a prefix with `ipam ip add 192.168.0.0/24 fqdn2.example.com`
 - much more (see `ipam (command) --help` for examples)
+
+
 If PowerDNS integration is enabled in `$HOME/.ipam/ipam.yml`, forward and reverse DNS records
 are automatically managed when you add or delete IP addresses with hostnames.
 
